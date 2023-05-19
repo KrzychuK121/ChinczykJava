@@ -1,0 +1,94 @@
+@startuml "Chińczyk"
+
+class Player{
+    private Random random;
+    private int whichCounter;
+    
+    public Player();
+    public void chooseCounter();
+    public int getWhichCounter();
+    protected int draw();
+    public abstract void makeMove();
+}
+
+class Bot{
+
+}
+
+class User{
+
+}
+
+class GameEngine{
+    private Player[] players = new Player[4];
+    private GameFrame gameFrame = new GameFrame();
+
+    public GameEngine();
+    void run();
+}
+
+class GameFrame{
+
+    public GameFrame();
+    abstract void viewBoard(Board board);
+    abstract void viewWinner(Board board);
+    {method}// Wyświetla użytkownikowi listę pionków, którymi może wykonać ruch
+    abstract void viewAvalibleCounters(Board board);
+}
+
+class GameFrameAPI{
+    public GameFrame(Board board); // super(board);
+    void viewBoard();
+}
+
+class OptionFrame{
+    public actionPerformed();
+    void viewWinner();
+}
+
+class Main{
+    public static void main(String args[]); // new OptionFrame();
+}
+
+class Counter{
+    static int boardSize = 40;
+    private Color color;
+    private int position;
+
+    public Counter(Color color); // domyślnie position = -1;
+    public Counter(Color color, int position);
+    {method}// Przydatna przy wychodzeniu z bazy, wracania
+    {method}// do bazy po zbiciu albo wchodzenia do domku.
+    public void setPosition(int position);
+    public void MoveCounter(int jump);
+    public int getPosition();
+}
+
+class Board{
+    private Color[] fields = new Color[40];
+    private int[] outFields = new int[4]; // przechowuje numer pola w tablicy fields
+    private boolean[][] startFields = new boolean[4][4];
+    private boolean[][] finishFields = new boolean[4][4];
+    {method}// Gdy pionek ma pozycję 39 to stoi przed polem końcowym i czeka na wejście w pole końcowe
+    {method}// Gdy pionek ma pozycję 41-44 to znajduje się w polu końcowym
+    {method}// Gdy pionek ma pozycję -1 to znajduje się ,,w bazie"
+    private Counter[][] counters = new Counter[4][4];
+
+    public void reloadBoard(int oldPosition, int newPosition);
+    public Color[] getBoard();
+}
+
+Bot "dziedziczy po" --|> Player
+User "dziedziczy po" --|> Player
+
+GameFrameAPI "dziedziczy po" -up-|> GameFrame
+
+Player "1" --* "4" GameEngine
+
+GameEngine "zawiera się w" --> Main
+Counter "1" --* "16" Board
+Board "zawiera się w" --> GameEngine
+GameFrameAPI "zawiera się w" --> GameEngine
+OptionFrame "jest wywoływany w" --> "run();" GameEngine
+
+@enduml

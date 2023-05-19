@@ -1,0 +1,56 @@
+19.04.2023
+
+Pionek ma pozycję względną i bezwzględną:
+ * względna - pozycja jaką zajmuje od miejsca, z którego wyszedł
+ * bezwzględna - realna pozycja na planszy
+
+Pozycja względna jest przydatna przy sprawdzeniu czy pionek przeszedł całą planszę
+i czeka na wejście do domku
+
+Pozycja bezwzględna przydaje się przy sprawdzeniu czy pionek po zmianie pozycji zbija
+innego pionka.
+
+20.04.2023
+
+Trzeba stworzyć obiekt np. initValues, który posiada pola typu ,,String[] userNames = new String[4];" itp, w którym będą przechowywane wartości potrzebne do zainicjalizowania wartości w silniku. Powinna ona być inicjalizowana za pośrednictwem ekranu api w metodzie, która będzie odpowiadać za wyświetlenie ekranu dotyczącego inicjalizacji wartości.
+
+23.04.2023
+
+--- Wyświetlanie losowania dla różnych graczy i ekranów
+
+Do ekranu wysyłamy jest gracz. Tam jest podejmowana decyzja o tym jak ma się wyświetlać GUI (zablokowany guzik dla bota i aktywny dla usera). Po tym obaj mają wywoływaną funkcje losowania. U bota losowanie następuje automatycznie więc automatycznie nastąpi doClick na guziku kostki do losowania a u usera będzie odczekanie pewnego czasu by to zrobić (nie będzie czekać dalej jeśli kliknie wcześniej, wtedy od razu przejdzie do wykonania ruchu czyli wybrania pionka). Funkcja losowania u playera działa tak, że jest do niej przesyłany ekran. U bota od razu jest losowana wartość a u gracza jest timer i jeśli dobiegnie końca to wtedy jest wywoływany doClick
+
+--- Rzut kostką 
+
+Przy rzucie kostka musi być tworzona suma z ilości wyrzuconych oczek. Bo jak ktoś wylosuje 6 to może rzucić jeszcze raz i wtedy suma wyrzuconych oczek jest wartością skoku pionka (ile pól ma skoczyć do przodu)
+
+LUB
+
+Niech użytkownik po każdym rzucie decyduje o tym czy chce np. wyjść z domku i przejść dalej tym pionkiem czy może innym pionkiem się ruszyć
+
+27.04.2023
+
+-- Stworzenie tablicy pól do przechodzenia
+Mamy następujące kierunki oraz następujące ilości pól do przejścia zaczynajac od pola (0, 5):
+-2> \4/ -4> \2/ <4- \4/ <2- /4\ <4- /2\ -4> /4\
+Trzeba by zrobić jakieś iteratory przechodzące w pętli w zależności od kierunku.
+
+Kierunki oznaczają:
+ * -> zwiększa kolumny, wiersze bez zmian
+ * <- zmniejsza kolumny, wiersze bez zmian
+ * /\ kolumny bez zmian, zmniejsza wiersze 
+ * \/ kolumny bez zmian, zwiększa wiersze
+
+30.04.2023
+
+Przydatny link z funkcją, która może się przydać losowaniu kością w zależności od gracza:
+https://stackoverflow.com/questions/11635155/java-event-listener-on-clock-minute-change
+
+07.05.2023
+
+Wielowątkowość:
+https://stackoverflow.com/questions/289434/how-to-make-a-java-thread-wait-for-another-threads-output
+
+16.05.2023
+
+Trzeba zmodyfikować wyświetlanie pionków, którymi gracz może się ruszyć po rzuceniu kością. Nie można aktywować pionka, który po ruchu stanął by na polu, na którym znajduje się kilka pionków tego samego gracza. Jeśli to będzie działać to powinna być już możliwość złożenia całej gry.

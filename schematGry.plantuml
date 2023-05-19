@@ -1,0 +1,20 @@
+@startuml
+
+(*) --> "Uruchomienie gry przez użytkownika"
+--> "Pobieranie danych od użytkownika jakimi pionkami chce grać i ile ma być żywych graczy"
+--> "Uruchomienie właściwej gry z wyświetlaną planszą"
+--> "Sprawdzenie czy aktualny gracz wszedł wszystkimi 4 pionami" as sprawdzenie
+--> if "Nie wszedł 4 pionkami"
+    --> [Tak] "Przejście do następnego gracza"
+    --> "Rzut kostką przez gracza"
+    --> if "Gracz może wykonać akcję"
+            --> [Tak] "Gracz wybiera pionka, na którym chce wykonać ruch"
+            --> "Wykonanie ruchu i sprawdzenie warunków jakie niesie ze sobą ruch"
+        endif
+    --> sprawdzenie
+else
+    --> [Nie] "Wyświetlenie wyniku - koniec gry"
+    --> (*)
+endif
+
+@enduml
