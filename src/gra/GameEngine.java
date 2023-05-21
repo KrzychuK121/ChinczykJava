@@ -38,7 +38,7 @@ public class GameEngine {
 	board = new Board(getPlayersColors());
 	
 	gameFrame.viewGame(board, players);
-	gameFrame.viewBoard(board);
+	gameFrame.viewBoard(board, players[playersIterator]);
 	
 	playersIterator = 3;
 	Color playerColor = players[playersIterator].getColor();
@@ -60,8 +60,8 @@ public class GameEngine {
 	//board.moveCounter(playerColor, 0, playersIterator, 5);
 	//collide(playerColor, board.getCounter(playerColor, 0).getPosition());
 	
-	gameFrame.viewBoard(board);
-	gameFrame.viewAvalibleCounters(players[0].getColor(), 0, true, 6, board);
+	gameFrame.viewBoard(board, players[playersIterator]);
+	gameFrame.viewAvalibleCounters(players[0], 0, 6, board);
 	
 	//game(0);
 	
