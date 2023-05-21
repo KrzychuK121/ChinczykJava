@@ -18,10 +18,10 @@ public interface GameFrame {
      * potrzebnych do wyświetlenia g ry
      */
     public void viewGame(Board board, Player[] players);
-    public void viewBoard(Board board);
+    public void viewBoard(Board board, Player player);
     public void viewWinner(Player player);
     // Wyświetla użytkownikowi listę pionków, którymi może wykonać ruch
-    public ArrayList<Counter> viewAvalibleCounters(Color whichCounters, int whichPlayer, boolean ifUser, int howManyEye, Board board);
+    public ArrayList<Counter> viewAvalibleCounters(Player player, int whichPlayer, int howManyEye, Board board);
     public void viewCounters(Board board);
     public void viewPlayerDraw(boolean ifUser);
     /**

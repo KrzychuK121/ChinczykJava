@@ -8,6 +8,11 @@ public class Bot extends Player{
     public Bot(String name){
 	super(name);
     }
+   
+    @Override
+    public boolean ifUser(){
+	return false;
+    }
     
     @Override
     public int chooseCounter(Board board) {

@@ -10,6 +10,11 @@ public class User extends Player{
     }
 
     @Override
+    public boolean ifUser(){
+	return true;
+    }
+    
+    @Override
     public int chooseCounter(Board board) {
 	return -1;
     }

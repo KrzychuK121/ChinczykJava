@@ -39,5 +39,7 @@ public abstract class Player {
     
     public abstract int throwDice(GameFrame gameFrame);
     
+    public abstract boolean ifUser();
+    
     
 }

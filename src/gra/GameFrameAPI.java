@@ -261,11 +261,11 @@ public class GameFrameAPI extends JFrame implements GameFrame {
     }
     
     @Override
-    public void viewBoard(Board board) {	
+    public void viewBoard(Board board, Player player) {	
 	// Pokazanie pionków na ekranie
 	viewCounters(board);
 	
-	
+	bDie.setEnabled(player.ifUser());
 	
 	pack();
     }
@@ -396,13 +396,13 @@ public class GameFrameAPI extends JFrame implements GameFrame {
     }
 
     @Override
-    public ArrayList<Counter> viewAvalibleCounters(Color whichCounters, int whichPlayer, boolean ifUser, int howManyEye, Board board) {
+     public ArrayList<Counter> viewAvalibleCounters(Player player, int whichPlayer, int howManyEye, Board board){
 	ArrayList<Counter> counters = new ArrayList<Counter>();
 	// Tablica potrzebna by rozróżnić który pionek z bazy ma zostać aktywowany
 	ArrayList<Integer> whichCounter = new ArrayList<Integer>();
 	
-	for(int i = 0; i < board.getBoard().get(whichCounters).length; i++){
-	    Counter counter = board.getBoard().get(whichCounters)[i];
+	for(int i = 0; i < board.getBoard().get(player.getColor()).length; i++){
+	    Counter counter = board.getBoard().get(player.getColor())[i];
 	    int position = counter.getPosition();
 	    
 	    // Pionek znajduje się w bazie i gracz wyrzucił 6 (a więc może nim wyjść)
@@ -414,8 +414,8 @@ public class GameFrameAPI extends JFrame implements GameFrame {
 	    else if(counter.ifCloseToHouse(board.outFields[whichPlayer], howManyEye)){
 		// Koliduje
 		boolean collide = false;
-		for(int j = 0; j < board.getBoard().get(whichCounters).length; j++){		    
-		    if(i != j && counter.getHousePosition(board.outFields[whichPlayer], howManyEye) == board.getBoard().get(whichCounters)[j].getPosition()){
+		for(int j = 0; j < board.getBoard().get(player.getColor()).length; j++){		    
+		    if(i != j && counter.getHousePosition(board.outFields[whichPlayer], howManyEye) == board.getBoard().get(player.getColor())[j].getPosition()){
 			collide = true;
 			break;
 		    }
@@ -428,7 +428,7 @@ public class GameFrameAPI extends JFrame implements GameFrame {
 		// aby został aktywny.
 		boolean ifAdd = true;
 		for(Color color : board.getBoard().keySet()){
-		    if(color.equals(whichCounters))
+		    if(color.equals(player.getColor()))
 			continue;
 
 		    if(board.countCountersOnField(color, counter.getPositionAfterJump(howManyEye)) > 1){
@@ -445,10 +445,10 @@ public class GameFrameAPI extends JFrame implements GameFrame {
 		
 	}
 	
-	if(ifUser){
+	if(player.ifUser()){
 	    for(int i = 0; i < counters.size(); i++){
 		if(counters.get(i).getPosition() == -1){
-		    baseFields.get(whichCounters)[whichCounter.get(0)].setEnabled(true);
+		    baseFields.get(player.getColor())[whichCounter.get(0)].setEnabled(true);
 		    whichCounter.remove(0);
 		}else
 		    fields.get(counters.get(i).getPosition()).setEnabled(true);
