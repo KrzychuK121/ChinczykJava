@@ -101,9 +101,11 @@ public class GameEngine {
 	int previousPlayer = currentPlayer == 0 ? players.length - 1 : currentPlayer - 1;
 	
 	if(ifPlayerWon(players[previousPlayer].getColor())){
+	    gameFrame.viewCounters(board);
 	    gameFrame.viewWinner(players[previousPlayer]);
 	    return true;
 	}else if(ifPlayerWon(players[currentPlayer].getColor())){
+	    gameFrame.viewCounters(board);
 	    gameFrame.viewWinner(players[currentPlayer]);
 	    return true;
 	}

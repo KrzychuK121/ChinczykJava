@@ -19,7 +19,6 @@ public class InitValue {
 	COUNTER_COLORS.put("Zielony", Color.GREEN);
 	COUNTER_COLORS.put("<Domyślny>", null);
 	
-	
     }
     
     /**

@@ -18,7 +18,7 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
     private Map<Color, JButton[]> houseFields = new HashMap<>(InitValue.COUNTER_COLORS.size());
     private Map<Color, JButton[]> baseFields = new HashMap<>(InitValue.COUNTER_COLORS.size());
     private ArrayList<JButton> fields = new ArrayList<>(40);
-    //private Map<Color, ImageIcon> counterIcon = new HashMap<>(InitValue.COUNTER_COLORS.size());
+    private Map<Color, ImageIcon> counterIcons = new HashMap<>(InitValue.COUNTER_COLORS.size());
     
     private ArrayList<Counter> avalibleCounters;
     
@@ -31,14 +31,18 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
     //private java.util.Timer timer = new java.util.Timer();
     //private int eyesIterator = 0;
     private int playerDraw;
+    protected final int DEFAULT_BUTTON_SIZE = 60;
     
     /**
      * Creates new form GameFrameAPI
      */
     public GameFrameAPI(GameEngine gameEngine) {
 	initComponents();
+	// Ustawianie okna na środku ekranu
 	int screenWidth = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
 	    screenHeight = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+	
+	setSize(900, 900);
 	
 	setLocation((screenWidth - getWidth()) / 2, (screenHeight - getHeight()) / 2);
 	
@@ -160,9 +164,9 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
                     .addComponent(pRightDownBase, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
             .addGroup(pBoardLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(pFields, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(pFields, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
             .addGroup(pBoardLayout.createSequentialGroup()
                 .addGap(38, 38, 38)
                 .addComponent(ePlayer4)
@@ -182,8 +186,8 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
                     .addComponent(ePlayer1)
                     .addComponent(ePlayer2))
                 .addGap(2, 2, 2)
-                .addComponent(pFields, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(pFields, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pBoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ePlayer3)
                     .addComponent(ePlayer4))
@@ -191,7 +195,7 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
                 .addGroup(pBoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(pRightDownBase, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pLeftDownBase, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pOptions.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
@@ -241,10 +245,31 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
                 .addComponent(pOptions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
-
-        pack();
     }// </editor-fold>//GEN-END:initComponents
     
+    
+    public void initCounterIcons(){
+	final String defaultPath = "counter";
+	final String fileType = ".png";
+	Map<String, String> colorsPath = new HashMap<>(InitValue.COUNTER_COLORS.size());
+	
+	colorsPath.put("Czerwony", defaultPath + "Red" + fileType);
+	colorsPath.put("Niebieski", defaultPath + "Blue" + fileType);
+	colorsPath.put("Żółty", defaultPath + "Yellow" + fileType);
+	colorsPath.put("Zielony", defaultPath + "Green" + fileType);
+	
+	int width = fields.get(0).getWidth(),
+	    height = fields.get(0).getHeight();
+	
+	Image image = Toolkit.getDefaultToolkit().getImage(defaultPath + fileType).getScaledInstance(DEFAULT_BUTTON_SIZE / 2, DEFAULT_BUTTON_SIZE / 2,  java.awt.Image.SCALE_SMOOTH);
+	counterIcons.put(Color.GRAY, new ImageIcon(image));
+	
+	for(String colorName : colorsPath.keySet()){
+	    image = Toolkit.getDefaultToolkit().getImage(colorsPath.get(colorName)).getScaledInstance(DEFAULT_BUTTON_SIZE / 2, DEFAULT_BUTTON_SIZE / 2,  java.awt.Image.SCALE_SMOOTH);
+	    counterIcons.put(InitValue.COUNTER_COLORS.get(colorName), new ImageIcon(image));
+	}
+	
+    }
     
     @Override
     public void viewGame(Board board, Player[] players) {
@@ -267,9 +292,8 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 	/*int i = 0;
 	for(JButton b : fields){
 	    b.setText("" + (i++));
-	}*/
-	
-	pack();
+	}*/	
+	initCounterIcons();
     }
     
     @Override
@@ -288,7 +312,6 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 	bDie.setEnabled(player.ifUser());
 	
 	lWhichPlayerDraw.setText("Aktualnie rzuca:\n" + player.getName());
-	pack();
 	
 	if(player.ifUser())
 	    return;
@@ -426,25 +449,31 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
     public void clearBoard(){
 	for(JButton b : fields){
 	    b.setText(" ");
-	    b.setUI(new MetalButtonUI() {
+	    b.setIcon(null);
+	    b.setDisabledIcon(null);
+	    b.setBorder(BorderFactory.createLineBorder(b.getBackground(), 4));
+	    /*b.setUI(new MetalButtonUI() {
 		protected Color getDisabledTextColor() {
 		    return Color.GRAY;
 		}
-	    });
+	    });*/
 	    b.setEnabled(false);
 	}
 	
 	for(Color color : baseFields.keySet())
 	    for(JButton b : baseFields.get(color)){
 		b.setText(" ");
+		b.setIcon(null);
+		b.setDisabledIcon(null);
 		b.setEnabled(false);
+		b.setBorder(BorderFactory.createLineBorder(b.getBackground(), 4));
 	    }
 		
     }
 
     @Override
     public void viewWinner(Player player) {
-	JOptionPane.showMessageDialog(this, "Gracz " + player.getName() + " wygrał tę partie.\nGratulacje!", "Zwycięsca!", JOptionPane.PLAIN_MESSAGE);
+	JOptionPane.showMessageDialog(this, "Gracz " + player.getName() + " wygrał tę partie.\nGratulacje!", "Zwycięzca!", JOptionPane.PLAIN_MESSAGE);
 	this.dispose();
 	System.exit(0);
     }
@@ -470,8 +499,6 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 		boolean collide = false;
 		for(int j = 0; j < board.getBoard().get(player.getColor()).length; j++){		    
 		    if(i != j && counter.getHousePosition(howManyEye) == board.getBoard().get(player.getColor())[j].getPosition()){
-			System.out.println("Pozycja aktualna wchodzącego: " + counter.getHousePosition(howManyEye));
-			System.out.println("Pozycja wchodzącego po rzucie: " + counter.getHousePosition(howManyEye) + "\tPozycja w domku: " + board.getBoard().get(player.getColor())[j].getPosition());
 			collide = true;
 			break;
 		    }
@@ -510,9 +537,13 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 	    for(int i = 0; i < counters.size(); i++){
 		if(counters.get(i).getPosition() == -1){
 		    baseFields.get(player.getColor())[whichCounter.get(0)].setEnabled(true);
+		    baseFields.get(player.getColor())[whichCounter.get(0)].setBorder(BorderFactory.createLineBorder(Color.cyan, 4));
 		    whichCounter.remove(0);
-		}else
+		}else{
 		    fields.get(counters.get(i).getPosition()).setEnabled(true);
+		    fields.get(counters.get(i).getPosition()).setBorder(BorderFactory.createLineBorder(Color.cyan, 4));
+		}
+		    
 	    }
 	}
 	
@@ -527,29 +558,31 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 	    for(int i = 0; i < board.getBoard().get(color).length; i++){
 		Counter tmp = board.getCounter(color, i);
 		if(tmp.getPosition() == -1){
-		    baseFields.get(color)[i].setText("p");
-		    /*int width = baseFields.get(color)[i].getWidth(),
-			height = baseFields.get(color)[i].getHeight();
-		    Image image = Toolkit.getDefaultToolkit().getImage("C:\\Users\\Komputer Domowy\\Desktop\\PROGRAMOWANIE\\Java\\Chinczyk\\ChinczykGIT\\ChinczykJava\\counter.png").getScaledInstance(width, height,  java.awt.Image.SCALE_SMOOTH);
-		    ImageIcon icon = new ImageIcon(image);
-		    baseFields.get(color)[i].setIcon(icon);*/
+		    //baseFields.get(color)[i].setText("p");
+		    baseFields.get(color)[i].setIcon(counterIcons.get(Color.GRAY));
+		    baseFields.get(color)[i].setDisabledIcon(counterIcons.get(Color.GRAY));
 		}
 		else if(tmp.getPosition() > -1 && tmp.getPosition() < 40){
 		    int howManyCounters = board.countCountersOnField(color, tmp.getPosition());
-		    fields.get(tmp.getPosition()).setText(howManyCounters == 1 ? "p" : howManyCounters + "p");
+		    //fields.get(tmp.getPosition()).setText(howManyCounters == 1 ? "p" : howManyCounters + "p");
+		    fields.get(tmp.getPosition()).setText(howManyCounters == 1 ? " " : howManyCounters + "");
+		    fields.get(tmp.getPosition()).setIcon(counterIcons.get(color));
+		    fields.get(tmp.getPosition()).setDisabledIcon(counterIcons.get(color));
 		    
-		    if(!color.equals(fields.get(tmp.getPosition()).getBackground())){
+		    /*if(!color.equals(fields.get(tmp.getPosition()).getBackground())){
 			fields.get(tmp.getPosition()).setUI(new MetalButtonUI() {
 			    protected Color getDisabledTextColor() {
 				return color;
 			    }
 			});
-		    }
+		    }*/
 		}
 		    
 		else{
 		    //System.out.println(color + "\t" + tmp.getPosition());
-		    houseFields.get(color)[tmp.getPosition() % 40].setText("p");
+		    //houseFields.get(color)[tmp.getPosition() % 40].setText("p");
+		    houseFields.get(color)[tmp.getPosition() % 40].setIcon(counterIcons.get(Color.GRAY));
+		    houseFields.get(color)[tmp.getPosition() % 40].setDisabledIcon(counterIcons.get(Color.GRAY));
 		}
 		    
 	    }
@@ -649,7 +682,7 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 	public void actionPerformed(ActionEvent e) {
 	    
 	    Counter counterToMove = getCounterToMove();
-	    counterToMove.moveCounter(gameEngine.getBoard().outFields[gameEngine.getPlayersIterator()], playerDraw); // UWAGA TU EWENTUALNIE DAĆ getPlayerDraw()
+	    counterToMove.moveCounter(gameEngine.getBoard().outFields[gameEngine.getPlayersIterator()], playerDraw);
 	    
 	    gameEngine.collide(gameEngine.getCurrentPlayer().getColor(), counterToMove.getPosition());
 	    gameEngine.game(playerDraw == 6 ? gameEngine.getPlayersIterator() : gameEngine.getNextPlayer());
