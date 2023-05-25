@@ -31,7 +31,7 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
     //private java.util.Timer timer = new java.util.Timer();
     //private int eyesIterator = 0;
     private int playerDraw;
-    protected final int DEFAULT_BUTTON_SIZE = 60;
+    protected final int DEFAULT_BUTTON_SIZE = 20;
     
     /**
      * Creates new form GameFrameAPI
@@ -42,7 +42,7 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 	int screenWidth = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
 	    screenHeight = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 	
-	setSize(900, 900);
+	setSize(700, 720);
 	
 	setLocation((screenWidth - getWidth()) / 2, (screenHeight - getHeight()) / 2);
 	
@@ -164,9 +164,9 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
                     .addComponent(pRightDownBase, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
             .addGroup(pBoardLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(pFields, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(pFields, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(pBoardLayout.createSequentialGroup()
                 .addGap(38, 38, 38)
                 .addComponent(ePlayer4)
@@ -185,8 +185,8 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
                 .addGroup(pBoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(ePlayer1)
                     .addComponent(ePlayer2))
-                .addGap(2, 2, 2)
-                .addComponent(pFields, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(22, 22, 22)
+                .addComponent(pFields, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pBoardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ePlayer3)
@@ -208,21 +208,21 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
         pOptions.setLayout(pOptionsLayout);
         pOptionsLayout.setHorizontalGroup(
             pOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pOptionsLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pOptionsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(lWhichPlayerDraw)
-                .addGap(44, 44, 44)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
                 .addComponent(bDie)
-                .addContainerGap(89, Short.MAX_VALUE))
+                .addGap(98, 98, 98))
         );
         pOptionsLayout.setVerticalGroup(
             pOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pOptionsLayout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addGroup(pOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(bDie, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
-                    .addComponent(lWhichPlayerDraw))
-                .addGap(27, 27, 27))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pOptionsLayout.createSequentialGroup()
+                .addContainerGap(21, Short.MAX_VALUE)
+                .addGroup(pOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lWhichPlayerDraw)
+                    .addComponent(bDie))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -241,7 +241,7 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(pBoard, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pOptions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -258,14 +258,11 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 	colorsPath.put("Żółty", defaultPath + "Yellow" + fileType);
 	colorsPath.put("Zielony", defaultPath + "Green" + fileType);
 	
-	int width = fields.get(0).getWidth(),
-	    height = fields.get(0).getHeight();
-	
-	Image image = Toolkit.getDefaultToolkit().getImage(defaultPath + fileType).getScaledInstance(DEFAULT_BUTTON_SIZE / 2, DEFAULT_BUTTON_SIZE / 2,  java.awt.Image.SCALE_SMOOTH);
+	Image image = Toolkit.getDefaultToolkit().getImage(defaultPath + fileType).getScaledInstance(DEFAULT_BUTTON_SIZE, DEFAULT_BUTTON_SIZE,  java.awt.Image.SCALE_SMOOTH);
 	counterIcons.put(Color.GRAY, new ImageIcon(image));
 	
 	for(String colorName : colorsPath.keySet()){
-	    image = Toolkit.getDefaultToolkit().getImage(colorsPath.get(colorName)).getScaledInstance(DEFAULT_BUTTON_SIZE / 2, DEFAULT_BUTTON_SIZE / 2,  java.awt.Image.SCALE_SMOOTH);
+	    image = Toolkit.getDefaultToolkit().getImage(colorsPath.get(colorName)).getScaledInstance(DEFAULT_BUTTON_SIZE, DEFAULT_BUTTON_SIZE,  java.awt.Image.SCALE_SMOOTH);
 	    counterIcons.put(InitValue.COUNTER_COLORS.get(colorName), new ImageIcon(image));
 	}
 	
@@ -580,7 +577,7 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 		    
 		else{
 		    //System.out.println(color + "\t" + tmp.getPosition());
-		    //houseFields.get(color)[tmp.getPosition() % 40].setText("p");
+		    //houseFields.get(color)[tmp.getPosition() % 40].setText("");
 		    houseFields.get(color)[tmp.getPosition() % 40].setIcon(counterIcons.get(Color.GRAY));
 		    houseFields.get(color)[tmp.getPosition() % 40].setDisabledIcon(counterIcons.get(Color.GRAY));
 		}
