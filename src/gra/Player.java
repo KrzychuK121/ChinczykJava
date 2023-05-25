@@ -37,7 +37,7 @@ public abstract class Player {
      */
     public abstract int chooseCounter(Board board);
     
-    public abstract int throwDice(GameFrame gameFrame);
+    //public abstract int throwDice(GameFrame gameFrame);
     
     public abstract boolean ifUser();
     

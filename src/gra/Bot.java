@@ -19,9 +19,9 @@ public class Bot extends Player{
 	return -1;
     }
 
-    @Override
+    /*@Override
     public int throwDice(GameFrame gameFrame) {
 	gameFrame.viewPlayerDraw(false);
 	return gameFrame.viewDieAnimation();
-    }
+    }*/
 }

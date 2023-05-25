@@ -1,14 +1,17 @@
 @startuml "Chińczyk"
 
-class Player{
-    private Random random;
-    private int whichCounter;
+abstract Player{
+    protected String name;
+    protected Color colorOfCounters;
     
-    public Player();
-    public void chooseCounter();
-    public int getWhichCounter();
-    protected int draw();
-    public abstract void makeMove();
+    public Player(String name);
+    public String getName();
+    public Color getColor();
+    public void setName(String name);
+    public void setColorOfCounters(Color color);
+
+    public abstract int chooseCounter(Board board);
+    public abstract boolean ifUser();
 }
 
 class Bot{
@@ -20,62 +23,81 @@ class User{
 }
 
 class GameEngine{
-    private Player[] players = new Player[4];
-    private GameFrame gameFrame = new GameFrame();
+    private Player[] players;
+    private GameFrame gameFrame;
+    private Board board;
+    private int playersIterator = 0;
 
     public GameEngine();
-    void run();
+    public void run();
+    public boolean game(int currentPlayer);
+    public void collide(Color whichGroup, int position);
+    public boolean ifPlayerWon(Color playerColor);
+    public void exitGame();
 }
 
-class GameFrame{
+abstract GameFrame{
+    {field} public final Random RANDOM = new Random();
+    {field} public ArrayList<Integer> eyes = new ArrayList<>(4);
 
-    public GameFrame();
-    abstract void viewBoard(Board board);
-    abstract void viewWinner(Board board);
-    {method}// Wyświetla użytkownikowi listę pionków, którymi może wykonać ruch
-    abstract void viewAvalibleCounters(Board board);
+    public void clearBoard();
+    public void viewGame(Board board, Player[] players);
+    public void viewBoard(Board board, Player player);
+    public void viewWinner(Player player);
+    public ArrayList<Counter> viewAvalibleCounters
+    (Player player, int whichPlayer, int howManyEye, Board board);
+    public void viewCounters(Board board);
+    public int viewDieAnimation();
+    public void viewExitInfo();
+    default public int draw();
 }
 
 class GameFrameAPI{
-    public GameFrame(Board board); // super(board);
-    void viewBoard();
+    private GameEngine gameEngine;
+    {field} private Map<Color, JButton[]> houseFields;
+    {field} private Map<Color, JButton[]> baseFields;
+    {field} private ArrayList<JButton> fields;
+    
+    private ArrayList<Counter> avalibleCounters;
+    
+    private char[] roadDirections;
+    
+    private int[] howManyButtons = {2, 4, 4};
+    private int playerDraw;
+}
+
+class InitValue{
+    {field} public static final Map<String, Color> COUNTER_COLORS;
+    {field} public static final int BOARD_SIZE = 40;
 }
 
 class OptionFrame{
-    public actionPerformed();
-    void viewWinner();
+    {field} protected static StartOptionPane startOptionPane;
+}
+
+class StartOptionPane{
+    private int usersAmount = 1;
+    private PlayerInitPane[] playerInitPanes = new PlayerInitPane[4];
+}
+
+class PlayerInitPane{
+    private static int paneCounter = 0;
+    private int whichPane;
+    private boolean ifUser;
 }
 
 class Main{
-    public static void main(String args[]); // new OptionFrame();
+    public static void main(String args[]);
 }
 
 class Counter{
-    static int boardSize = 40;
-    private Color color;
-    private int position;
-
-    public Counter(Color color); // domyślnie position = -1;
-    public Counter(Color color, int position);
-    {method}// Przydatna przy wychodzeniu z bazy, wracania
-    {method}// do bazy po zbiciu albo wchodzenia do domku.
-    public void setPosition(int position);
-    public void MoveCounter(int jump);
-    public int getPosition();
+    protected int position;
+    private int road = 0;
 }
 
 class Board{
-    private Color[] fields = new Color[40];
-    private int[] outFields = new int[4]; // przechowuje numer pola w tablicy fields
-    private boolean[][] startFields = new boolean[4][4];
-    private boolean[][] finishFields = new boolean[4][4];
-    {method}// Gdy pionek ma pozycję 39 to stoi przed polem końcowym i czeka na wejście w pole końcowe
-    {method}// Gdy pionek ma pozycję 41-44 to znajduje się w polu końcowym
-    {method}// Gdy pionek ma pozycję -1 to znajduje się ,,w bazie"
-    private Counter[][] counters = new Counter[4][4];
-
-    public void reloadBoard(int oldPosition, int newPosition);
-    public Color[] getBoard();
+    public final int[] outFields = { 32, 2, 12, 22 };
+    {field} protected Map<Color, Counter[]> counters;
 }
 
 Bot "dziedziczy po" --|> Player
@@ -86,6 +108,8 @@ GameFrameAPI "dziedziczy po" -up-|> GameFrame
 Player "1" --* "4" GameEngine
 
 GameEngine "zawiera się w" --> Main
+StartOptionPane "zawiera się w" --> OptionFrame
+PlayerInitPane "1" --* "4" StartOptionPane
 Counter "1" --* "16" Board
 Board "zawiera się w" --> GameEngine
 GameFrameAPI "zawiera się w" --> GameEngine

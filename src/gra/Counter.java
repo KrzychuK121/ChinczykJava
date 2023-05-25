@@ -9,6 +9,8 @@ import java.awt.*;
 public class Counter {
     // Pozycja bezwzględna na planszy
     protected int position;
+    //ile pól przeszedł pionek
+    private int road = 0;
     
     public Counter(){
 	moveCounterToBase();
@@ -30,49 +32,80 @@ public class Counter {
 	// Jeśli pionek znajduje się w domku to zwróć fałsz
 	if(position > 39)
 	    return false;
-	// Ustawienie pozycji pionka, który ma wejść do domku
-	// Jeśli pionek znajduje się między 6 polem od wejścia do domku a pierwszym polem od wejścia do domku
-	// oraz jego pozycja zwiększona o ilość wyrzuconych oczek oznaczało by przejście poza pole tuż przed wejściem do domku
-	// to ma ustawić jego pozycję na pozycję w domku.
-	if(ifCloseToHouse(startPosition, jump)){
-	    position = getHousePosition(startPosition, jump);
-	    return true;
-	}
-	    
 	
 	// Nie trzeba sprawdzać czy gracz wyrzucił 6 czy nie ponieważ plansza dba o to by wyświetlić te pionki,
 	// którymi gracz może dokonać ruchu po wyrzuconej konkretnej ilości oczek.
         // Jeśli pionek znajduje się w bazie to trzeba go postawić w polu startowym. 
 	// Jeśli pionek nie znajduje się w bazie to trzeba zmienić jego pozycję
 	if(position == -1 && jump == 6){
+	    road = 1;
 	    position = startPosition;
 	    return true;
 	}
 	
-	if(position != -1)
+	// Ustawienie pozycji pionka, który ma wejść do domku
+	// Jeśli pionek znajduje się między 6 polem od wejścia do domku a pierwszym polem od wejścia do domku
+	// oraz jego pozycja zwiększona o ilość wyrzuconych oczek oznaczało by przejście poza pole tuż przed wejściem do domku
+	// to ma ustawić jego pozycję na pozycję w domku.
+	if(ifCanEnterHouse(jump)){
+	    road += jump;
+	    position = road;
+	    return true;
+	}
+	
+	if(position != -1){
+	    road += jump;
 	    position = (position + jump) % InitValue.BOARD_SIZE;
+	}
+	    
 	
         return true;
             
     }
     
     /**
-     * Funkcja sprawdzająca czy pionek znajduje się tuż przed wejściem do domku (po wyrzuconej liczbie oczek
-     * byłby w stanie wejść do domku).
+     * Funkcja sprawdzająca czy pionek po wykonanym skoku nie przejdzie poza zakres planszy
+     * i nie wejdzie do domku
+     * 
+     * @param jump - ilość wyrzuconych oczek, ilość skoków jakie musi wykonać pionek
+     * 
+     * @return Zwraca prawdę jeśli pionek nie przeskoczy planszy i po wykonaniu skoku 
+     * nie znajdzie się w polu końcowym (domku)
+     */
+    public boolean ifBeforeHouse(int jump){
+	//System.out.println(road + jump);
+	return road + jump < 40;
+    }
+    
+    /**
+     * Funkcja, która sprawdza czy pionek po wyrzuconej liczbie oczek byłby w stanie
+     * wejść na jakiekolwiek pole domku czy przeszedł by poza pola domku (indeks 44 i więcej).
      * 
      * @param startPosition - pozycja, na którą wychodzi pionek po opuszczeniu bazy
      * @param jump - ilość wyrzuconych oczek, ilość skoków jakie musi wykonać pionek
      * 
-     * @return Jeśli pionek znajduje się między 6 polem od wejścia do domku a pierwszym polem od wejścia do domku
-     * oraz jego pozycja zwiększona o ilość wyrzuconych oczek oznaczało by przejście poza pole tuż przed wejściem do domku
-     * to funkcja zwraca prawdę. Jeśli nie to funkcja zwraca fałsz.
+     * @return Jeśli pozycja pionka zwiększona o ilość wyrzuconych oczek oznaczała by przejście poza pole tuż przed wejściem do domku
+     * to funkcja zwraca fałsz. Jeśli nie to funkcja zwraca prawdę.
      */
-    public boolean ifCloseToHouse(int startPosition, int jump){
-	return -8 < position - startPosition && position - startPosition < -1 && -2 < position + jump - startPosition;
+    public boolean ifCanEnterHouse(int jump){
+	return 40 <= road + jump && road + jump <= 43;
     }
     
-    public int getHousePosition(int startPosition, int jump){
-	return position + jump - startPosition + 41;
+    /**
+     * Funkcja potrzebna do tego by spradzić czy pionek po wykonaniu ruchu
+     * nie będzie bliżej domku. Jeśli tak to zwróci prawdę. Jeśli nie to zwróci fałsz
+     * @param startPosition
+     * @param jump
+     * @return 
+     */
+    /*public boolean ifCloserToHouse(int startPosition, int jump){
+	return -2 < position + jump - startPosition && position + jump - startPosition < 3;
+    }*/
+    
+    public int getHousePosition(int jump){
+	//System.out.println(position + jump - startPosition + 41);
+	//return position + jump - startPosition + 41;
+	return road + jump;
     }
     
     public int getPositionAfterJump(int jump){
@@ -81,6 +114,7 @@ public class Counter {
     
     public void moveCounterToBase(){
 	position = -1;
+	road = 0;
     }
     
     /**
@@ -91,6 +125,10 @@ public class Counter {
      */
     public void setPosition(int position){
 	this.position = position;
+    }
+    
+    public void setRoad(int road){
+	this.road = road;
     }
     
     public int getPosition(){

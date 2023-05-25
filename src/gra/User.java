@@ -19,9 +19,9 @@ public class User extends Player{
 	return -1;
     }
 
-    @Override
+    /*@Override
     public int throwDice(GameFrame gameFrame) {
 	gameFrame.viewPlayerDraw(true);
 	return gameFrame.viewDieAnimation();
-    }
+    }*/
 }

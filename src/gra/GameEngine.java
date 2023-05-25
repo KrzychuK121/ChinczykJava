@@ -11,14 +11,12 @@ import java.util.ArrayList;
 public class GameEngine {
     
     private Player[] players;
-    private Player winner;
     private GameFrame gameFrame;
     private Board board;
     private int playersIterator = 0;
-    //private int currentPlayer = 0;
     
     public GameEngine(){
-	gameFrame = new GameFrameAPI();
+	gameFrame = new GameFrameAPI(this);
     }
     
     public ArrayList<Color> getPlayersColors(){
@@ -30,26 +28,49 @@ public class GameEngine {
 	return tmp;
     }
     
+    public Player getCurrentPlayer(){
+	return players[playersIterator];
+    }
+    
+    public int getPlayersIterator(){
+	return playersIterator;
+    }
+    
+    public int getNextPlayer(){
+	playersIterator = ++playersIterator % players.length;
+	return playersIterator;
+    }
+    
+    public Board getBoard(){
+	return board;
+    }
+    
     public void run(){
 	players = OptionFrame.showOptionDialog();
 	if(players == null)
 	    exitGame();
 	
 	board = new Board(getPlayersColors());
+	gameFrame.viewGame(board, players);
 	
+	//board.getCounter(players[0].getColor(), 0).setPosition(26);
+	//board.getCounter(players[0].getColor(), 0).setRoad(35);
+	
+	game(playersIterator);
+	/*
 	gameFrame.viewGame(board, players);
 	gameFrame.viewBoard(board, players[playersIterator]);
 	
 	playersIterator = 3;
 	Color playerColor = players[playersIterator].getColor();
 	
-	/*for(int i = 0; i < 4; i++){
+	for(int i = 0; i < 4; i++){
 	    board.getCounter(playerColor, i).setPosition(43 - i);
 	}	
-	gameFrame.viewBoard(board);*/
-	//board.getCounter(playerColor, 2).setPosition(5);
+	gameFrame.viewBoard(board);
+	board.getCounter(playerColor, 2).setPosition(5);
 	
-	//board.getCounter(playerColor, 3).setPosition(40);
+	board.getCounter(playerColor, 3).setPosition(40);
 	
 	board.moveCounter(playerColor, 0, playersIterator, 6);
 	board.moveCounter(playerColor, 1, playersIterator, 6);
@@ -57,31 +78,45 @@ public class GameEngine {
 	
 	board.getCounter(players[0].getColor(), 0).setPosition(17);
 	
-	//board.moveCounter(playerColor, 0, playersIterator, 5);
-	//collide(playerColor, board.getCounter(playerColor, 0).getPosition());
+	board.moveCounter(playerColor, 0, playersIterator, 5);
+	collide(playerColor, board.getCounter(playerColor, 0).getPosition());
 	
 	gameFrame.viewBoard(board, players[playersIterator]);
 	gameFrame.viewAvalibleCounters(players[0], 0, 6, board);
 	
-	//game(0);
+	game(0);
 	
 	if(ifPlayerWon(playerColor))
 	    gameFrame.viewWinner(players[playersIterator]);
 	
-	//while(ifPlayerWon(currentPlayer)){
+	while(ifPlayerWon(currentPlayer)){
         
 	
-	//}
-	
+	}
+	*/
     }
     
     // Zwraca true gdy gra została wygrana
     public boolean game(int currentPlayer){
-	System.out.println(players[currentPlayer].throwDice(gameFrame));
-	return true;
+	int previousPlayer = currentPlayer == 0 ? players.length - 1 : currentPlayer - 1;
+	
+	if(ifPlayerWon(players[previousPlayer].getColor())){
+	    gameFrame.viewWinner(players[previousPlayer]);
+	    return true;
+	}else if(ifPlayerWon(players[currentPlayer].getColor())){
+	    gameFrame.viewWinner(players[currentPlayer]);
+	    return true;
+	}
+	
+	gameFrame.viewBoard(board, players[currentPlayer]);
+	
+	return false;
     }
     
     public void collide(Color whichGroup, int position){
+	if(position > 39)
+	    return;
+	
 	for(Color color : board.getBoard().keySet()){
 	    if(color.equals(whichGroup))
 		continue;

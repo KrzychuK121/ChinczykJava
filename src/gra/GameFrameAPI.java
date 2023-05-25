@@ -1,20 +1,26 @@
 
 package gra;
 
+import static gra.GameFrame.RANDOM;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
+import javax.swing.plaf.metal.MetalButtonUI;
 
 /**
  *
  * @author Komputer Domowy
  */
-public class GameFrameAPI extends JFrame implements GameFrame {
+public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
+    private GameEngine gameEngine;
     private Map<Color, JButton[]> houseFields = new HashMap<>(InitValue.COUNTER_COLORS.size());
     private Map<Color, JButton[]> baseFields = new HashMap<>(InitValue.COUNTER_COLORS.size());
     private ArrayList<JButton> fields = new ArrayList<>(40);
+    //private Map<Color, ImageIcon> counterIcon = new HashMap<>(InitValue.COUNTER_COLORS.size());
+    
+    private ArrayList<Counter> avalibleCounters;
     
     // Idąc przez plansze zaczynajac od górnego środkowego punktu (0; 5) 
     // trzeba ,,skręcić" w odpowiednim kierunku. Lista kierunków, w jakich trzeba przejść, jest zapisana w tej tablicy.
@@ -22,14 +28,22 @@ public class GameFrameAPI extends JFrame implements GameFrame {
     // Tablica zawierająca ile buttonów trzeba wstawić do tablicy idąc w danym kierunku.
     private int[] howManyButtons = {2, 4, 4};
   
-    private java.util.Timer timer = new java.util.Timer();
-    private int eyesIterator = 0;
+    //private java.util.Timer timer = new java.util.Timer();
+    //private int eyesIterator = 0;
+    private int playerDraw;
     
     /**
      * Creates new form GameFrameAPI
      */
-    public GameFrameAPI() {
-	initComponents();	
+    public GameFrameAPI(GameEngine gameEngine) {
+	initComponents();
+	int screenWidth = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
+	    screenHeight = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+	
+	setLocation((screenWidth - getWidth()) / 2, (screenHeight - getHeight()) / 2);
+	
+	this.gameEngine = gameEngine;
+	bDie.addActionListener(this);
     }
 
    
@@ -55,6 +69,7 @@ public class GameFrameAPI extends JFrame implements GameFrame {
         ePlayer4 = new javax.swing.JLabel();
         pOptions = new javax.swing.JPanel();
         bDie = new javax.swing.JButton();
+        lWhichPlayerDraw = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chińczyk");
@@ -182,18 +197,17 @@ public class GameFrameAPI extends JFrame implements GameFrame {
         pOptions.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
 
         bDie.setText("Kostka");
-        bDie.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bDieActionPerformed(evt);
-            }
-        });
+
+        lWhichPlayerDraw.setText("aktualny gracz:");
 
         javax.swing.GroupLayout pOptionsLayout = new javax.swing.GroupLayout(pOptions);
         pOptions.setLayout(pOptionsLayout);
         pOptionsLayout.setHorizontalGroup(
             pOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pOptionsLayout.createSequentialGroup()
-                .addGap(90, 90, 90)
+                .addContainerGap()
+                .addComponent(lWhichPlayerDraw)
+                .addGap(44, 44, 44)
                 .addComponent(bDie)
                 .addContainerGap(89, Short.MAX_VALUE))
         );
@@ -201,7 +215,9 @@ public class GameFrameAPI extends JFrame implements GameFrame {
             pOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pOptionsLayout.createSequentialGroup()
                 .addGap(22, 22, 22)
-                .addComponent(bDie, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
+                .addGroup(pOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(bDie, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
+                    .addComponent(lWhichPlayerDraw))
                 .addGap(27, 27, 27))
         );
 
@@ -228,10 +244,6 @@ public class GameFrameAPI extends JFrame implements GameFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void bDieActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDieActionPerformed
-        
-    }//GEN-LAST:event_bDieActionPerformed
     
     
     @Override
@@ -262,12 +274,42 @@ public class GameFrameAPI extends JFrame implements GameFrame {
     
     @Override
     public void viewBoard(Board board, Player player) {	
+	/*for(Color color : gameEngine.getPlayersColors()){
+	    for(int i = 0; i < 4; i++){
+		System.out.println(board.getCounter(color, i).getPosition());
+	    }
+	}
+	System.out.println(gameEngine.getPlayersIterator());*/
+	
+	
 	// Pokazanie pionków na ekranie
 	viewCounters(board);
 	
 	bDie.setEnabled(player.ifUser());
 	
+	lWhichPlayerDraw.setText("Aktualnie rzuca:\n" + player.getName());
 	pack();
+	
+	if(player.ifUser())
+	    return;
+	
+	
+	int whichPlayer = gameEngine.getPlayersIterator();
+	int drawBot = draw();
+	
+	bDie.setText(" ");
+	
+	avalibleCounters = viewAvalibleCounters(player, whichPlayer, drawBot, board);
+	
+	if(avalibleCounters.size() > 0){
+	    Counter counterToMove = avalibleCounters.get(RANDOM.nextInt(avalibleCounters.size()));
+	    counterToMove.moveCounter(board.outFields[whichPlayer], drawBot);
+
+	    gameEngine.collide(player.getColor(), counterToMove.getPosition());
+	}
+	
+	gameEngine.game(drawBot == 6 ? gameEngine.getPlayersIterator() : gameEngine.getNextPlayer());	
+	    
     }
     
     protected JButton[] createBasePanel(JPanel panel, Color baseColor){
@@ -278,7 +320,7 @@ public class GameFrameAPI extends JFrame implements GameFrame {
 	    buttons[i].setBackground(baseColor);
 	    buttons[i].setEnabled(false);
 	    panel.add(buttons[i]);
-	    // Dodać potem actionListener
+	    buttons[i].addActionListener(new ClicableFieldsHandler((i + 1) * -1));
 	}
 	return buttons;
     }
@@ -343,6 +385,8 @@ public class GameFrameAPI extends JFrame implements GameFrame {
 			break;
 		}
 		gridOfButtons[row][col].setEnabled(false);
+		gridOfButtons[row][col].addActionListener(new ClicableFieldsHandler(fields.size()));
+		gridOfButtons[row][col].setBackground(new Color(173, 173, 173));
 		fields.add(gridOfButtons[row][col]);
 	    }
 	}
@@ -382,17 +426,27 @@ public class GameFrameAPI extends JFrame implements GameFrame {
     public void clearBoard(){
 	for(JButton b : fields){
 	    b.setText(" ");
+	    b.setUI(new MetalButtonUI() {
+		protected Color getDisabledTextColor() {
+		    return Color.GRAY;
+		}
+	    });
+	    b.setEnabled(false);
 	}
 	
 	for(Color color : baseFields.keySet())
-	    for(JButton b : baseFields.get(color))
+	    for(JButton b : baseFields.get(color)){
 		b.setText(" ");
+		b.setEnabled(false);
+	    }
+		
     }
 
     @Override
     public void viewWinner(Player player) {
-	//JOptionPane.showMessageDialog(this, "Zwycięstwo!", );
 	JOptionPane.showMessageDialog(this, "Gracz " + player.getName() + " wygrał tę partie.\nGratulacje!", "Zwycięsca!", JOptionPane.PLAIN_MESSAGE);
+	this.dispose();
+	System.exit(0);
     }
 
     @Override
@@ -411,18 +465,22 @@ public class GameFrameAPI extends JFrame implements GameFrame {
 		whichCounter.add(i);
 	    } // Pionek znajduje się tuż przed wejściem do domku i trzeba sprawdzić czy nie wejdzie
 	      // na pionek, który się tam już znajduje
-	    else if(counter.ifCloseToHouse(board.outFields[whichPlayer], howManyEye)){
+	    else if(counter.getPosition() < 40 && counter.ifCanEnterHouse(howManyEye)){
 		// Koliduje
 		boolean collide = false;
 		for(int j = 0; j < board.getBoard().get(player.getColor()).length; j++){		    
-		    if(i != j && counter.getHousePosition(board.outFields[whichPlayer], howManyEye) == board.getBoard().get(player.getColor())[j].getPosition()){
+		    if(i != j && counter.getHousePosition(howManyEye) == board.getBoard().get(player.getColor())[j].getPosition()){
+			System.out.println("Pozycja aktualna wchodzącego: " + counter.getHousePosition(howManyEye));
+			System.out.println("Pozycja wchodzącego po rzucie: " + counter.getHousePosition(howManyEye) + "\tPozycja w domku: " + board.getBoard().get(player.getColor())[j].getPosition());
 			collide = true;
 			break;
 		    }
 		}
-		if(!collide)
+		if(!collide){
 		    counters.add(counter);
-	    }else if(-1 < position && position < 40){
+		}
+		
+	    }else if(-1 < position && counter.ifBeforeHouse(howManyEye)){
 		// Jeśli więcej jak jeden pionek przeciwnika znajdują się na polu,
 		// na które miałby wejść aktualny pionek to nie można go dodać do listy
 		// aby został aktywny.
@@ -432,15 +490,18 @@ public class GameFrameAPI extends JFrame implements GameFrame {
 			continue;
 
 		    if(board.countCountersOnField(color, counter.getPositionAfterJump(howManyEye)) > 1){
-			System.out.println(board.countCountersOnField(color, position));
+			//System.out.println(board.countCountersOnField(color, position));
 			ifAdd = false;
 			break;
 		    }
 
 		}
 		
-		if(ifAdd)
+		if(ifAdd){
+		    //System.out.println("pozycja pionka na planszy: " + counter.getPosition());
 		    counters.add(counter);
+		}
+		    
 	    }
 		
 	}
@@ -461,18 +522,33 @@ public class GameFrameAPI extends JFrame implements GameFrame {
     @Override
     public void viewCounters(Board board) {	
 	clearBoard();
+	
 	for(Color color : board.getBoard().keySet()){
 	    for(int i = 0; i < board.getBoard().get(color).length; i++){
 		Counter tmp = board.getCounter(color, i);
 		if(tmp.getPosition() == -1){
 		    baseFields.get(color)[i].setText("p");
+		    /*int width = baseFields.get(color)[i].getWidth(),
+			height = baseFields.get(color)[i].getHeight();
+		    Image image = Toolkit.getDefaultToolkit().getImage("C:\\Users\\Komputer Domowy\\Desktop\\PROGRAMOWANIE\\Java\\Chinczyk\\ChinczykGIT\\ChinczykJava\\counter.png").getScaledInstance(width, height,  java.awt.Image.SCALE_SMOOTH);
+		    ImageIcon icon = new ImageIcon(image);
+		    baseFields.get(color)[i].setIcon(icon);*/
 		}
 		else if(tmp.getPosition() > -1 && tmp.getPosition() < 40){
 		    int howManyCounters = board.countCountersOnField(color, tmp.getPosition());
 		    fields.get(tmp.getPosition()).setText(howManyCounters == 1 ? "p" : howManyCounters + "p");
+		    
+		    if(!color.equals(fields.get(tmp.getPosition()).getBackground())){
+			fields.get(tmp.getPosition()).setUI(new MetalButtonUI() {
+			    protected Color getDisabledTextColor() {
+				return color;
+			    }
+			});
+		    }
 		}
 		    
 		else{
+		    //System.out.println(color + "\t" + tmp.getPosition());
 		    houseFields.get(color)[tmp.getPosition() % 40].setText("p");
 		}
 		    
@@ -483,11 +559,6 @@ public class GameFrameAPI extends JFrame implements GameFrame {
     @Override
     public void viewExitInfo() {
 	JOptionPane.showMessageDialog(this, "Koniec gry");
-    }
-
-    @Override
-    public void viewPlayerDraw(boolean ifUser) {
-	bDie.setEnabled(ifUser);
     }
     
     @Override
@@ -501,11 +572,6 @@ public class GameFrameAPI extends JFrame implements GameFrame {
 	    }while(i != 0 && viewDraw == draws.get(i - 1));
 	    draws.add(viewDraw);
 	    bDie.setText(viewDraw + "");
-	    try {
-		Thread.sleep(1000);
-	    } catch (InterruptedException ex) {
-		ex.printStackTrace();
-	    }
 	}
 	
 	bDie.setText(draw + "");
@@ -519,6 +585,7 @@ public class GameFrameAPI extends JFrame implements GameFrame {
     private javax.swing.JLabel ePlayer2;
     private javax.swing.JLabel ePlayer3;
     private javax.swing.JLabel ePlayer4;
+    private javax.swing.JLabel lWhichPlayerDraw;
     private javax.swing.JPanel pBoard;
     private javax.swing.JPanel pFields;
     private javax.swing.JPanel pLeftDownBase;
@@ -527,5 +594,67 @@ public class GameFrameAPI extends JFrame implements GameFrame {
     private javax.swing.JPanel pRightDownBase;
     private javax.swing.JPanel pRightUpBase;
     // End of variables declaration//GEN-END:variables
+    
+    /**
+     * Listener do kostki.
+     * @param e - przesyła obiekt, który wywołuje tę metodę (w tym przypadku tylko kostkę więc jest nieużywany)
+     */
+    @Override
+    public void actionPerformed(ActionEvent e) {
+	int whichPlayer = gameEngine.getPlayersIterator();
+	playerDraw = draw();
+	
+	bDie.setText(playerDraw + "");
+	bDie.setEnabled(false);
+	    
+	avalibleCounters = viewAvalibleCounters(gameEngine.getCurrentPlayer(), whichPlayer, playerDraw, gameEngine.getBoard());
+	
+	if(avalibleCounters.size() == 0){
+	    gameEngine.game(gameEngine.getNextPlayer());
+	    return;
+	}
+	
+    }
 
+    
+    public class ClicableFieldsHandler implements ActionListener{
+	// Dla pól, po których się chodzi <code>fields</code> przyjmuje normalne wartości.
+	// Dla pól <code>baseFields</code> przyjmuje wartości [-1; -4], stąd by otrzymać pionek
+	// trzeba wyciągnąć wartość absolutną i odjąć 1 (otrzymamy wartości [0; 3])
+	private int positionOnBoard;
+	
+	public ClicableFieldsHandler(int positionOnBoard){
+	    this.positionOnBoard = positionOnBoard;
+	}
+	
+	public Counter getCounterToMove(){
+	    if(positionOnBoard < 0){
+		int whichCounter = Math.abs(positionOnBoard) - 1;
+		Color playerColor = gameEngine.getCurrentPlayer().getColor();
+		
+		return gameEngine.getBoard().getCounter(playerColor, whichCounter);
+	    }
+	    
+	    for(Counter counter : avalibleCounters){
+		if(counter.getPosition() != positionOnBoard)
+		    continue;
+		
+		return counter;
+	    }
+	    
+	    return null;
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    
+	    Counter counterToMove = getCounterToMove();
+	    counterToMove.moveCounter(gameEngine.getBoard().outFields[gameEngine.getPlayersIterator()], playerDraw); // UWAGA TU EWENTUALNIE DAĆ getPlayerDraw()
+	    
+	    gameEngine.collide(gameEngine.getCurrentPlayer().getColor(), counterToMove.getPosition());
+	    gameEngine.game(playerDraw == 6 ? gameEngine.getPlayersIterator() : gameEngine.getNextPlayer());
+	    
+	}
+	
+    }
 }

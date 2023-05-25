@@ -57,7 +57,7 @@ public class StartOptionPane extends JPanel {
 	}
     }
     
-    protected void changeUsersAmount(boolean ifIncrement) {                                           
+    protected void changeUsersAmount(boolean ifIncrement){                                           
 	usersAmount += ifIncrement ? 1 : -1;
         setButtons();
 	lUsersAmount.setText("Ilość graczy: " + usersAmount);
