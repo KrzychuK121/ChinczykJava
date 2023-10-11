@@ -14,6 +14,7 @@ public class Main {
 	    public void run() {
 		GameEngine gameEngine = new GameEngine();
 		gameEngine.run();
+		System.out.println("test");
 	    }
 	});
     }
