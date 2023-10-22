@@ -1,12 +1,7 @@
-
 package gra;
 
 import javax.swing.*;
 
-/**
- *
- * @author Komputer Domowy
- */
 public class PlayerInitPane extends javax.swing.JPanel {
     
     private static int paneCounter = 0;
@@ -15,6 +10,8 @@ public class PlayerInitPane extends javax.swing.JPanel {
     
     /**
      * Creates new form PlayerInitPane
+     * 
+     * @param forUser czy pole zostało przeznaczone dla użytkownika czy bota.
      */
     public PlayerInitPane(boolean forUser) {
 	whichPane = paneCounter++;
@@ -23,8 +20,12 @@ public class PlayerInitPane extends javax.swing.JPanel {
     }
 
     /**
+     * <pre>
+     * Metoda wywoływana w konstruktorze do inicjalizacji wartości
+     * potrzebnych do stworzenia pola.
+     * </pre>
      * 
-     * @param forUser - jeśli tak to znaczy, że trzeba napisać w polu 
+     * @param forUser ustawia wartość <code>ifUser</code>
      */
     public void myOptions(boolean forUser){
 	ifUser = forUser;

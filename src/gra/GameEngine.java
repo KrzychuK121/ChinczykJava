@@ -53,52 +53,20 @@ public class GameEngine {
 	board = new Board(getPlayersColors());
 	gameFrame.viewGame(board, players);
 	
-	//board.getCounter(players[0].getColor(), 0).setPosition(26);
-	//board.getCounter(players[0].getColor(), 0).setRoad(35);
-	
 	game(playersIterator);
-	/*
-	gameFrame.viewGame(board, players);
-	gameFrame.viewBoard(board, players[playersIterator]);
-	
-	playersIterator = 3;
-	Color playerColor = players[playersIterator].getColor();
-	
-	for(int i = 0; i < 4; i++){
-	    board.getCounter(playerColor, i).setPosition(43 - i);
-	}	
-	gameFrame.viewBoard(board);
-	board.getCounter(playerColor, 2).setPosition(5);
-	
-	board.getCounter(playerColor, 3).setPosition(40);
-	
-	board.moveCounter(playerColor, 0, playersIterator, 6);
-	board.moveCounter(playerColor, 1, playersIterator, 6);
-	board.moveCounter(playerColor, 2, playersIterator, 6);
-	
-	board.getCounter(players[0].getColor(), 0).setPosition(17);
-	
-	board.moveCounter(playerColor, 0, playersIterator, 5);
-	collide(playerColor, board.getCounter(playerColor, 0).getPosition());
-	
-	gameFrame.viewBoard(board, players[playersIterator]);
-	gameFrame.viewAvalibleCounters(players[0], 0, 6, board);
-	
-	game(0);
-	
-	if(ifPlayerWon(playerColor))
-	    gameFrame.viewWinner(players[playersIterator]);
-	
-	while(ifPlayerWon(currentPlayer)){
-        
-	
-	}
-	*/
     }
     
-    // Zwraca true gdy gra została wygrana
+    /**
+     * Metoda rozpoczynająca grę.
+     * 
+     * @param currentPlayer aktualnie rozpatrywany gracz
+     * 
+     * @return Zwraca true gdy gra została wygrana
+     */
     public boolean game(int currentPlayer){
-	int previousPlayer = currentPlayer == 0 ? players.length - 1 : currentPlayer - 1;
+	
+	
+	/*int previousPlayer = currentPlayer == 0 ? players.length - 1 : currentPlayer - 1;
 	
 	if(ifPlayerWon(players[previousPlayer].getColor())){
 	    gameFrame.viewCounters(board);
@@ -112,9 +80,17 @@ public class GameEngine {
 	
 	gameFrame.viewBoard(board, players[currentPlayer]);
 	
+	return false;*/
+	
 	return false;
     }
     
+    /**
+     * Metoda obsługująca zbicie pionka przeciwnika.
+     * 
+     * @param whichGroup która grupa pionków (którego gracza) jest rozpatrywana jako zbijający.
+     * @param position pozycja, na której znajduje się pionek zbijający.
+     */
     public void collide(Color whichGroup, int position){
 	if(position > 39)
 	    return;
@@ -134,7 +110,8 @@ public class GameEngine {
     }
     
     /**
-     * Funkcja boolowska, która zwraca prawdę jeśli gracz wygrał.
+     * <pre>
+     * Metoda boolowska, która zwraca prawdę jeśli gracz wygrał.
      * Sprawdzane są pionki gracza, który wykonał rzut kostką i ruszył się swoim pionkiem.
      * Jeśli gracz wygrał to program powinien zakończyć swoje działanie i wyświetlić komunikat
      * o wygranej. Jeśli nie to gra powinna toczyć się dalej i przejść do następnego gracza.
@@ -145,8 +122,10 @@ public class GameEngine {
      * ponieważ podczas wykonywania ruchu sprawdzane jest czy gracz może się ruszyć danym pionkiem.
      * Gracz nie ma dostępu do pionka (nie może wykonać ruchu) jeśli ruch spowodował by, że
      * dwa pionki będą w tym samym miejscu.
+     * </pre>
      * 
-     * @param playerColor - kolor aktualnie sprawdzanego gracza
+     * @param playerColor kolor aktualnie sprawdzanego gracza
+     * 
      * @return Zwraca prawdę jeśli gracz wygrał i fałsz w przeciwnym wypadku
      */
     public boolean ifPlayerWon(Color playerColor){

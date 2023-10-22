@@ -34,7 +34,9 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
     protected final int DEFAULT_BUTTON_SIZE = 20;
     
     /**
-     * Creates new form GameFrameAPI
+     * Ustawianie właściwości okna.
+     * 
+     * @param gameEngine obiekt, który wywołuje <code>GameFrameApi</code>
      */
     public GameFrameAPI(GameEngine gameEngine) {
 	initComponents();
@@ -247,20 +249,27 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
         );
     }// </editor-fold>//GEN-END:initComponents
     
-    
+    /**
+     * <pre>
+     * Metoda pobiera ikony z plików w projekcie a następnie wstawia je do <code>counterIcons</code>.
+     * Ikony te przydadzą się do wyświetlania na guzikach graficznej reprezentacji pionka
+     * </pre>
+     */
     public void initCounterIcons(){
-	final String defaultPath = "counter";
-	final String fileType = ".png";
+	final String DEFAULT_PATH = "counter";
+	final String FILE_TYPE = ".png";
 	Map<String, String> colorsPath = new HashMap<>(InitValue.COUNTER_COLORS.size());
 	
-	colorsPath.put("Czerwony", defaultPath + "Red" + fileType);
-	colorsPath.put("Niebieski", defaultPath + "Blue" + fileType);
-	colorsPath.put("Żółty", defaultPath + "Yellow" + fileType);
-	colorsPath.put("Zielony", defaultPath + "Green" + fileType);
+	colorsPath.put("Czerwony", DEFAULT_PATH + "Red" + FILE_TYPE);
+	colorsPath.put("Niebieski", DEFAULT_PATH + "Blue" + FILE_TYPE);
+	colorsPath.put("Żółty", DEFAULT_PATH + "Yellow" + FILE_TYPE);
+	colorsPath.put("Zielony", DEFAULT_PATH + "Green" + FILE_TYPE);
 	
-	Image image = Toolkit.getDefaultToolkit().getImage(defaultPath + fileType).getScaledInstance(DEFAULT_BUTTON_SIZE, DEFAULT_BUTTON_SIZE,  java.awt.Image.SCALE_SMOOTH);
+	Image image = Toolkit.getDefaultToolkit().getImage(DEFAULT_PATH + FILE_TYPE).getScaledInstance(DEFAULT_BUTTON_SIZE, DEFAULT_BUTTON_SIZE,  java.awt.Image.SCALE_SMOOTH);
+	// Ikona pionków znajdujących się w polu bazy (przed wyjściem na planszę).
 	counterIcons.put(Color.GRAY, new ImageIcon(image));
 	
+	// Ikony kolorowych pionków, potrzebne do wyświetlania na planszy.
 	for(String colorName : colorsPath.keySet()){
 	    image = Toolkit.getDefaultToolkit().getImage(colorsPath.get(colorName)).getScaledInstance(DEFAULT_BUTTON_SIZE, DEFAULT_BUTTON_SIZE,  java.awt.Image.SCALE_SMOOTH);
 	    counterIcons.put(InitValue.COUNTER_COLORS.get(colorName), new ImageIcon(image));
@@ -284,6 +293,7 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 	baseFields.put(players[2].getColor(), createBasePanel(pRightDownBase, players[2].getColor()));
 	baseFields.put(players[3].getColor(), createBasePanel(pLeftDownBase, players[3].getColor()));
 	
+	// Ustawienie pól planszy (fields) i domku (houseFields).
 	setButtons(pFields, board, players);
 	
 	/*int i = 0;
@@ -321,7 +331,7 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 	
 	avalibleCounters = viewAvalibleCounters(player, whichPlayer, drawBot, board);
 	
-	if(avalibleCounters.size() > 0){
+	if(!avalibleCounters.isEmpty()){
 	    Counter counterToMove = avalibleCounters.get(RANDOM.nextInt(avalibleCounters.size()));
 	    counterToMove.moveCounter(board.outFields[whichPlayer], drawBot);
 
@@ -332,6 +342,17 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 	    
     }
     
+    /**
+     * <pre>
+     * Metoda pobiera panel, w którym mają pojawić się pola bazy (przed wyjściem na planszę)
+     * oraz kolor tej bazy. Następnie ustawia listenery, kolor itp.
+     * </pre>
+     * 
+     * @param panel miejsce gdzie pojawią się guziki reprezentujące pola bazy.
+     * @param baseColor kolor jaki ma przyjąć pole.
+     * 
+     * @return tablicę guzików zapisanych w panelu aby mieć do nich bezpośrednie odwołanie w tablicy <code>baseFields</code>.
+     */
     protected JButton[] createBasePanel(JPanel panel, Color baseColor){
 	panel.setLayout(new GridLayout(2, 2, 6, 6));
 	JButton[] buttons = new JButton[InitValue.COUNTER_COLORS.size() - 1];
@@ -345,23 +366,40 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 	return buttons;
     }
     
+    /**
+     * <pre>
+     * Metoda tworzy kwadratową siatkę guzików, która następnie zostaje przetworzona na planszę
+     * do chińczyka w kształcie plusa. Następnie tablica ta zostaje wysłana do <code>setFields</code>
+     * aby z tablicy tej wyodrębnić pola startowe, pola końcowe oraz zapisać pola do chodzenia
+     * w talicy <code>fields</code> aby odwzorowywały prawidłowy kierunek przechodzenia po planszy.
+     * </pre>
+     * 
+     * @param pBoard panel, w którym znajdują się guziki reprezentujące pola planszy.
+     * @param board obiekt tablicy przechowujący położenia wszystkich guzików potrzebny w <code>setFields</code>.
+     * @param players tablica graczy. Potrzebna w <code>setFields</code> do pokolorowania pól.
+     */
     protected void setButtons(JPanel pBoard, Board board, Player[] players){
 	pFields.setLayout(new GridLayout(11, 11, 6, 6));
 	
 	JButton[][] allButtons = new JButton[11][11];
 	
-	// Iteratory, za pomocą których będą dodawane dane do tablicy JButton w mapie houseFields.
-	// Trzeba dodawać je z dwóch różnych ,,kierunków" bo np. przy lewym domku wchodzi się od lewej
-	// do prawej a z kolei w zielonym domku wchodzi się od prawej do lewej, stąd do tablicy
-	// trzeba zapisać ostatni element domku na planszy jako pierwszy element tablicy.
-	int direction = 0,
-	    reverseDirection = 4;
-	
         for(int i = 0; i < 11; i++){
             for(int j = 0; j < 11; j++){
                 allButtons[i][j] = new JButton(" "); //"(" + i + ", " + j + ")"
                 pBoard.add(allButtons[i][j]);
-                if(i < 4 && j < 4 || i > 6 && j < 4 || i < 4 && j > 6 || i > 6 && j > 6 || i == 5 && j == 5)
+		// Warunek usuwający z tablicy 4 narożne kwadraty z głównego kwadratu aby otrzymać znak plusa.
+                if(
+		    // lewy górny kwadrat
+		    i < 4 && j < 4 || 
+		    // lewy dolny kwadrat
+		    i > 6 && j < 4 || 
+		    // prawy górny kwadrat
+		    i < 4 && j > 6 || 
+		    //  prawy dolny kwadrat
+		    i > 6 && j > 6 || 
+		    // sam środek plusa, nienależący do żadnego pola
+		    i == 5 && j == 5
+		)
                     allButtons[i][j].setVisible(false);
             }
         }
@@ -370,14 +408,18 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
     }
     
     /**
+     * <pre>
      * Wywoływana w <code>protected void setButtons(JPanel pBoard)</code>
-     * Plansza musi być zrobiona za pomocą grida by wykorzystać tę funkcje.
-     * Przy tworzeniu planszy trzeba zapisać wszystkie guziki jakie zostały
-     * dodane do panelu. Następnie trzeba dodać w odpowiedniej kolejności
-     * te guziki, które mają być w składzie pól na planszy.
-     * @param gridOfButtons - Dwuwymiarowa tablica 
+     * W tej metodzie zapisujemy pola planszy do <code>fields</code> 
+     * ze wcześniej stworzonej siatki guzików(potrzebny <code>GridLayout</code>).
+     * Pola te są dodawane w metodzie w odpowiedniej kolejności 
+     * (idąc od jednego punktu po zewnętrznej stronie planszy).
+     * </pre>
+     * 
+     * @param gridOfButtons Dwuwymiarowa tablica przechowująca guziki w kształcie .
+     * @param board obiekt przechowujący położenia wszystkich pionków na planszy.
+     * @param players potrzebna do pobrania kolorów aby pokolorować <code>houseFields</code>.
      */
-    
     protected void setFields(JButton[][] gridOfButtons, Board board, Player[] players){
 	// Col powinno być 5 ale najpierw w pętli jest ustawiany kierunek i zmieniana
 	// wartość. Dlatego trzeba ustawić jedną kolumnę mniej by w pętli zwiększyło
@@ -413,14 +455,14 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 	
 	
 	
-	for(int i = 0; i < players.length; i++){
+	// Ustawianie kolorów pojedynczych pól, na które będą wychodzić pionki z bazy.
+	for(int i = 0; i < players.length; i++)
 	    fields.get(board.outFields[i]).setBackground(players[i].getColor());
-	}
+	
 	// Ustawianie tablic, które zostaną dodane do mapy <code>houseFields</code>
 	for(Color fieldColor : InitValue.COUNTER_COLORS.values()){
 	    if(fieldColor != null){
 		houseFields.put(fieldColor, new JButton[4]);
-		
 	    }
 	}	    
 	
@@ -444,6 +486,13 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
     
     @Override
     public void clearBoard(){
+	// UWAGA!
+	// Nie trzeba czyścić pól domku (pola końcowe), ponieważ tam nie wykonujemy żadnego ruchu
+	// poza wpisaniem nowego pionka na to miejsce. Metoda ta przydaje się tylko do czyszczenia pól
+	// gdy pionek opuści dane miejsce a takowa sytuacja nie zachodzi w tym przypadku.
+	  
+	
+	// Czyszczenie pól planszy do poruszania się.
 	for(JButton b : fields){
 	    b.setText(" ");
 	    b.setIcon(null);
@@ -457,6 +506,7 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 	    b.setEnabled(false);
 	}
 	
+	// Czyszczenie pól bazy (przed wyjściem na plansze).
 	for(Color color : baseFields.keySet())
 	    for(JButton b : baseFields.get(color)){
 		b.setText(" ");
@@ -477,34 +527,35 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 
     @Override
      public ArrayList<Counter> viewAvalibleCounters(Player player, int whichPlayer, int howManyEye, Board board){
-	ArrayList<Counter> counters = new ArrayList<Counter>();
+	ArrayList<Counter> counters = new ArrayList<>();
 	// Tablica potrzebna by rozróżnić który pionek z bazy ma zostać aktywowany
-	ArrayList<Integer> whichCounter = new ArrayList<Integer>();
+	ArrayList<Integer> whichCounter = new ArrayList<>();
 	
+	// Pętla wykona się tyle razy ile pionków ma gracz.
 	for(int i = 0; i < board.getBoard().get(player.getColor()).length; i++){
-	    Counter counter = board.getBoard().get(player.getColor())[i];
-	    int position = counter.getPosition();
+	    Counter playerCounter = board.getBoard().get(player.getColor())[i];
+	    int position = playerCounter.getPosition();
 	    
 	    // Pionek znajduje się w bazie i gracz wyrzucił 6 (a więc może nim wyjść)
 	    if(position == -1 && howManyEye == 6){
-		counters.add(counter);
+		counters.add(playerCounter);
 		whichCounter.add(i);
 	    } // Pionek znajduje się tuż przed wejściem do domku i trzeba sprawdzić czy nie wejdzie
 	      // na pionek, który się tam już znajduje
-	    else if(counter.getPosition() < 40 && counter.ifCanEnterHouse(howManyEye)){
+	    else if(playerCounter.getPosition() < 40 && playerCounter.ifCanEnterHouse(howManyEye)){
 		// Koliduje
 		boolean collide = false;
 		for(int j = 0; j < board.getBoard().get(player.getColor()).length; j++){		    
-		    if(i != j && counter.getHousePosition(howManyEye) == board.getBoard().get(player.getColor())[j].getPosition()){
+		    if(i != j && playerCounter.getHousePosition(howManyEye) == board.getBoard().get(player.getColor())[j].getPosition()){
 			collide = true;
 			break;
 		    }
 		}
 		if(!collide){
-		    counters.add(counter);
+		    counters.add(playerCounter);
 		}
 		
-	    }else if(-1 < position && counter.ifBeforeHouse(howManyEye)){
+	    }else if(-1 < position && playerCounter.ifBeforeHouse(howManyEye)){
 		// Jeśli więcej jak jeden pionek przeciwnika znajdują się na polu,
 		// na które miałby wejść aktualny pionek to nie można go dodać do listy
 		// aby został aktywny.
@@ -513,23 +564,20 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 		    if(color.equals(player.getColor()))
 			continue;
 
-		    if(board.countCountersOnField(color, counter.getPositionAfterJump(howManyEye)) > 1){
+		    if(board.countCountersOnField(color, playerCounter.getPositionAfterJump(howManyEye)) > 1){
 			//System.out.println(board.countCountersOnField(color, position));
 			ifAdd = false;
 			break;
 		    }
-
 		}
-		
 		if(ifAdd){
 		    //System.out.println("pozycja pionka na planszy: " + counter.getPosition());
-		    counters.add(counter);
+		    counters.add(playerCounter);
 		}
-		    
 	    }
-		
 	}
 	
+	// Jeśli gracz jest użytkownikiem a nie botem to trzeba ustawić pola planszy na aktywne aby gracz mógł je wykorzystać do wykonania ruchu.
 	if(player.ifUser()){
 	    for(int i = 0; i < counters.size(); i++){
 		if(counters.get(i).getPosition() == -1){
@@ -539,14 +587,26 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 		}else{
 		    fields.get(counters.get(i).getPosition()).setEnabled(true);
 		    fields.get(counters.get(i).getPosition()).setBorder(BorderFactory.createLineBorder(Color.cyan, 4));
-		}
-		    
+		}    
 	    }
 	}
 	
 	return counters;
     }
     
+     /**
+      * <pre>
+      * Metoda służy do odświeżania pionków na planszy. Powinna być wykonywana po każdym ruchu
+      * gracza.
+      * 
+      * UWAGA!
+      * W przyszłości można ją zastąpić metodą, która będzie edytować tylko poprzednie miejsce,
+      * na którym znajdował się pionek oraz nowe miejsce pionka. To samo w przypadku gdy ruch
+      * pionka spowoduje zbicie innego pionka.
+      * </pre>
+      * 
+      * @param board obiekt tablicy, który przechowuje pozycje wszystkich pionków na planszy.
+      */
     @Override
     public void viewCounters(Board board) {	
 	clearBoard();
@@ -554,14 +614,17 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 	for(Color color : board.getBoard().keySet()){
 	    for(int i = 0; i < board.getBoard().get(color).length; i++){
 		Counter tmp = board.getCounter(color, i);
+		// Wyświetlanie pionka w polu bazy (przed wyjściem na plansze)
 		if(tmp.getPosition() == -1){
 		    //baseFields.get(color)[i].setText("p");
 		    baseFields.get(color)[i].setIcon(counterIcons.get(Color.GRAY));
 		    baseFields.get(color)[i].setDisabledIcon(counterIcons.get(Color.GRAY));
 		}
+		// Wyświetlanie pionka na planszy
 		else if(tmp.getPosition() > -1 && tmp.getPosition() < 40){
 		    int howManyCounters = board.countCountersOnField(color, tmp.getPosition());
 		    //fields.get(tmp.getPosition()).setText(howManyCounters == 1 ? "p" : howManyCounters + "p");
+		    // Jeśli dwa pionki tego samego koloru stoją na polu to trzeba napisać ile ich jest.
 		    fields.get(tmp.getPosition()).setText(howManyCounters == 1 ? " " : howManyCounters + "");
 		    fields.get(tmp.getPosition()).setIcon(counterIcons.get(color));
 		    fields.get(tmp.getPosition()).setDisabledIcon(counterIcons.get(color));
@@ -574,7 +637,7 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 			});
 		    }*/
 		}
-		    
+		// Wyświetlanie pionka w domku (pole końcowe).
 		else{
 		    //System.out.println(color + "\t" + tmp.getPosition());
 		    //houseFields.get(color)[tmp.getPosition() % 40].setText("");
@@ -594,10 +657,11 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
     @Override
     public int viewDieAnimation() {
 	int draw = draw();
-	ArrayList<Integer> draws = new ArrayList<Integer>(5);
+	ArrayList<Integer> draws = new ArrayList<>(5);
 	int viewDraw = 0;
 	for(int i = 0; i < 4; i++){
 	    do{
+		// Będzie losować do momentu aż poprzedni rzut będzie inny od aktualnego.
 		viewDraw = draw();
 	    }while(i != 0 && viewDraw == draws.get(i - 1));
 	    draws.add(viewDraw);
@@ -626,7 +690,11 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
     // End of variables declaration//GEN-END:variables
     
     /**
-     * Listener do kostki.
+     * <pre>
+     * Listener do kostki. Obsługuje tylko rzut gracza niebędącego botem. 
+     * Jeśli gracz nie posiada pionków, którymi może wykonać ruch,
+     * to gra toczy się dalej przechodząc do kolejnego gracza.
+     * </pre>
      * @param e - przesyła obiekt, który wywołuje tę metodę (w tym przypadku tylko kostkę więc jest nieużywany)
      */
     @Override
@@ -648,15 +716,27 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 
     
     public class ClicableFieldsHandler implements ActionListener{
-	// Dla pól, po których się chodzi <code>fields</code> przyjmuje normalne wartości.
-	// Dla pól <code>baseFields</code> przyjmuje wartości [-1; -4], stąd by otrzymać pionek
-	// trzeba wyciągnąć wartość absolutną i odjąć 1 (otrzymamy wartości [0; 3])
+	/**
+	 * <pre>
+	 * Dla pól, po których się chodzi <code>fields</code> przyjmuje normalne wartości.
+	 * Dla pól <code>baseFields</code> przyjmuje wartości [-1; -4], stąd by otrzymać pionek
+	 * trzeba wyciągnąć wartość absolutną i odjąć 1 (otrzymamy wartości [0; 3]).
+	 * </pre>
+	 */
 	private int positionOnBoard;
 	
 	public ClicableFieldsHandler(int positionOnBoard){
 	    this.positionOnBoard = positionOnBoard;
 	}
 	
+	/**
+	 * <pre>
+	 * Metoda zwracająca pionek kliknięty przez użytkownika. 
+	 * Może zwrócić pionek znajdujący się w bazie jak i na polu planszy.
+	 * </pre>
+	 * 
+	 * @return obiekt reprezentujący pionek znajdujący się na planszy lub nic. Przydatne przy przemieszczaniu pionka.
+	 */
 	public Counter getCounterToMove(){
 	    if(positionOnBoard < 0){
 		int whichCounter = Math.abs(positionOnBoard) - 1;
@@ -675,6 +755,14 @@ public class GameFrameAPI extends JFrame implements GameFrame, ActionListener {
 	    return null;
 	}
 	
+	/**
+	 * <pre>
+	 * Metoda odpowiadająca za obsługę klawiszy reprezentujące pola na planszy.
+	 * Po kliknięciu na pole, pionek zmienia swoje położenie a następnie gra idzie do przodu.
+	 * </pre>
+	 * 
+	 * @param e 
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 	    

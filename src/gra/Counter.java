@@ -7,9 +7,9 @@ import java.awt.*;
  * @author Komputer Domowy
  */
 public class Counter {
-    // Pozycja bezwzględna na planszy
+    /** Pozycja bezwzględna na planszy */
     protected int position;
-    //ile pól przeszedł pionek
+    /** ile pól przeszedł pionek */
     private int road = 0;
     
     public Counter(){
@@ -21,11 +21,15 @@ public class Counter {
     }
     
     /**
-     * Funkcja odpowiedzialna za przesunięcie pozycji pionka po wyrzuceniu danej liczby oczek.
-     * @param startPosition - numer w tablicy <code>fields</code> znajdującej się w klasie <code>GameFrameAPI</code>.
-     * Potrzebny do tego by sprawdzić czy gracz po wykonaniu ruchu nie wyszedł by poza planszę. 
+     * <pre>
+     * Metoda odpowiedzialna za przesunięcie pozycji pionka po wyrzuceniu danej liczby oczek.
+     * Pionek po podaniu dodatniej liczby <code>jump</code> będzie się poruszał tylko do przodu.
+     * </pre>
      * 
+     * @param startPosition - numer w tablicy <code>outFields</code> znajdującej się w klasie <code>Board</code>.
+     * Potrzebny do tego by sprawdzić czy gracz po wykonaniu ruchu nie wyszedł by poza planszę. 
      * @param jump - wyrzucona przez gracza ilość kostek, czyli tyle ile pól ma się ruszyć pionek
+     * 
      * @return Zwraca prawdę jeśli ruch pionka mieści się w zakresie 
      */
     public boolean moveCounter(int startPosition, int jump){
@@ -64,8 +68,10 @@ public class Counter {
     }
     
     /**
-     * Funkcja sprawdzająca czy pionek po wykonanym skoku nie przejdzie poza zakres planszy
+     * <pre>
+     * Metoda sprawdzająca czy pionek po wykonanym skoku nie przejdzie poza zakres planszy
      * i nie wejdzie do domku
+     * </pre>
      * 
      * @param jump - ilość wyrzuconych oczek, ilość skoków jakie musi wykonać pionek
      * 
@@ -78,10 +84,11 @@ public class Counter {
     }
     
     /**
-     * Funkcja, która sprawdza czy pionek po wyrzuconej liczbie oczek byłby w stanie
+     * <pre>
+     * Metoda, która sprawdza czy pionek po wyrzuconej liczbie oczek byłby w stanie
      * wejść na jakiekolwiek pole domku czy przeszedł by poza pola domku (indeks 44 i więcej).
+     * </pre>
      * 
-     * @param startPosition - pozycja, na którą wychodzi pionek po opuszczeniu bazy
      * @param jump - ilość wyrzuconych oczek, ilość skoków jakie musi wykonać pionek
      * 
      * @return Jeśli pozycja pionka zwiększona o ilość wyrzuconych oczek oznaczała by przejście poza pole tuż przed wejściem do domku
@@ -92,10 +99,12 @@ public class Counter {
     }
     
     /**
-     * Funkcja potrzebna do tego by spradzić czy pionek po wykonaniu ruchu
+     * Metoda potrzebna do tego by spradzić czy pionek po wykonaniu ruchu
      * nie będzie bliżej domku. Jeśli tak to zwróci prawdę. Jeśli nie to zwróci fałsz
+     * 
      * @param startPosition
      * @param jump
+     * 
      * @return 
      */
     /*public boolean ifCloserToHouse(int startPosition, int jump){
@@ -108,6 +117,13 @@ public class Counter {
 	return road + jump;
     }
     
+    /**
+     * Metoda oblicza jaką pozycję będzie miał pionek po wykonaniu ruchu.
+     * 
+     * @param jump ilość pól jaką może pokonać pionek
+     * 
+     * @return możliwą pozycję pionka po wykonaniu ruchu 
+     */
     public int getPositionAfterJump(int jump){
 	return (position + jump) % InitValue.BOARD_SIZE;
     }
@@ -118,8 +134,10 @@ public class Counter {
     }
     
     /**
+     * <pre>
      * Przydatna przy wychodzeniu z bazy, wracania
      * do bazy po zbiciu albo wchodzenia do domku.
+     * </pre>
      * 
      * @param position - pozycja, na której chce się postawić pionka
      */

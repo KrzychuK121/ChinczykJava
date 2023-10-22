@@ -1,7 +1,6 @@
 
 package gra;
 
-import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
@@ -11,7 +10,9 @@ import javax.swing.*;
  */
 public class StartOptionPane extends JPanel {
 
+    /** ilość startowych użytkowników */
     private int usersAmount = 1;
+    /** Tablica paneli wyboru opcji pojedynczego gracza */
     private PlayerInitPane[] playerInitPanes = new PlayerInitPane[4];
     
     /**
@@ -30,6 +31,9 @@ public class StartOptionPane extends JPanel {
 	return playerInitPanes;
     }
     
+    /**
+     * Metoda inicjalizująca panele opcji użytkowników
+     */
     public void setPlayerInitList(){
 	InitValue.initCounterColors();
 	setButtons();
@@ -43,6 +47,12 @@ public class StartOptionPane extends JPanel {
 	}
     }
     
+    /**
+     * <pre>
+     * Metoda zmieniająca panel wyboru opcji dla użytkownika w zależności 
+     * od zmiany ilości użytkowników
+     * </pre>
+     */
     protected void changePlayersList(){
 	for(int i = 0; i < playerInitPanes.length; i++){
 	    // Jeśli aktualny panel powinien być dla użytkownika 
@@ -57,14 +67,23 @@ public class StartOptionPane extends JPanel {
 	}
     }
     
+    /**
+     * <pre>
+     * Metoda, która zmniejsza/zwiększa ilość użytkowników
+     * i ustawiająca panele w zależności od tego czy ma zostać 
+     * przeznaczony dla użytkownika lub bota.
+     * </pre>
+     * 
+     * @param ifIncrement jeśli tak to zwiększy <code>usersAmount</code>.
+     */
     protected void changeUsersAmount(boolean ifIncrement){                                           
 	usersAmount += ifIncrement ? 1 : -1;
         setButtons();
 	lUsersAmount.setText("Ilość graczy: " + usersAmount);
-	// Tutaj dać funkcję zmieniającą wartości w panelach
 	changePlayersList();
     }                                         
 
+    
     protected void setButtons(){
 	bDecrementUsersAmout.setEnabled(!(usersAmount == 1));
 	bIncrementUsersAmout.setEnabled(!(usersAmount == 4));
@@ -178,25 +197,32 @@ public class StartOptionPane extends JPanel {
         changeUsersAmount(true);
     }//GEN-LAST:event_bIncrementUsersAmoutActionPerformed
 
+    /** 
+     * Klasa wewnętrzna obsługująca operacje na liście rozwijanej.
+     */
     protected class CBCounterColorHandler implements ItemListener{
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 	    String item = (String)e.getItem();
 	    
+	    // wywołuje się kiedy zostanie odznaczony
 	    if(e.getStateChange() != ItemEvent.SELECTED){
 		if(!item.equals("<Domyślny>")){
 		    for(PlayerInitPane pane : playerInitPanes){
 			if(pane.getCBCounterColor() != e.getSource())
+			    // dodaje we wszystkich listach rozwijanych kolor porzucony przez gracza (odznaczony)
 			    pane.getCBCounterColor().addItem(item);
 		    }
 		}
 	    }
 	    
+	    // wywołuje się gdy zostaje zaznaczony
 	    if(e.getStateChange() == ItemEvent.SELECTED) {
 		if(!item.equals("<Domyślny>")){
 		    for(PlayerInitPane pane : playerInitPanes){
 			if(pane.getCBCounterColor() != e.getSource())
+			    // usuwa we wszystkich listach rozwijanych kolor wybrany przez użytkownika
 			    pane.getCBCounterColor().removeItem(item);
 		    }
 		}

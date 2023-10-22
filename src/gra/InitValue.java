@@ -18,12 +18,14 @@ public class InitValue {
 	COUNTER_COLORS.put("Żółty", Color.YELLOW);
 	COUNTER_COLORS.put("Zielony", Color.GREEN);
 	COUNTER_COLORS.put("<Domyślny>", null);
-	
     }
     
     /**
-     * Funkcja ma za zadanie przygotować wektor z kluczy (Stringów) w tablicy asocjacyjnej counterColors
-     * w taki sposób aby na pierwszym elemencie zawsze była wartość <code>"<Domyślny>"</code>.
+     * <pre>
+     * Metoda ma za zadanie przygotować wektor z kluczy (Stringów) w tablicy asocjacyjnej <code>COUNTER_COLORS</code>
+     * w taki sposób aby na pierwszym elemencie zawsze była wartość "<Domyślny>".
+     * </pre>
+     * 
      * @return Gotowy wektor, który służy do inicjalizacji danych w <code>JComboBox</code> 
      * (w którym znajdują się kolory dostępne na planszy) w klasie <code>PlayerInitPane</code>.
      */

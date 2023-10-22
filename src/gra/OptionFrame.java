@@ -11,6 +11,16 @@ import javax.swing.*;
 public class OptionFrame {
     protected static StartOptionPane startOptionPane = new StartOptionPane();
     
+    /**
+     * <pre>
+     * Metoda, która otwiera okno dialogowe pokazujące panel wyboru nicków 
+     * oraz kolorów poszczególnych graczy.
+     * </pre>
+     * 
+     * @return <pre> Jeśli ktoś zaakceptuje formularz to zostanie zwrócona tablica 
+     * graczy posiadających cechy wybrane w formularzu. W przeciwnym wypadku zostanie 
+     * zwrócona wartość <code>null</code></pre>
+     */
     public static Player[] showOptionDialog(){
 	String[] choices = {"Graj", "Wyjdź"};
 	
@@ -29,6 +39,16 @@ public class OptionFrame {
 	
     }
     
+    /**
+     * <pre>
+     * Metoda, która pobiera z panelu <code>startOptionPane</code> wartości podane przez
+     * użytkownika (lub wpisane automatycznie) a następnie na ich podstawie tworzy
+     * obiekty typu <code>Player</code>. Jeśli ktoś wybrał kolor "Domyślny" to
+     * podaje graczowi kolory, które nie zostały wybrane przez żadnego gracza.
+     * 
+     * </pre>
+     * @return tablicę graczy wraz z danymi podanymi w formularzu
+     */
     public static Player[] initValues(){
 	Player[] players = new Player[InitValue.COUNTER_COLORS.size() - 1];
 	
@@ -53,9 +73,9 @@ public class OptionFrame {
 		needColor.add(i);
 	}
 	
-	for(int i = 0; i < needColor.size(); i++){
+	// Gracz ma nadawany kolor pionków biorąc wartości, których nie wybrał żaden inny gracz.
+	for(int i = 0; i < needColor.size(); i++)
 	    players[needColor.get(i)].setColorOfCounters(InitValue.getCounterColor(colorNames.get(i)));
-	}
 	
 	return players;
 	
